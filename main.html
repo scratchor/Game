@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Gamedev Canvas Workshop</title>
+	<script src="./js/game.js"></script>
+	<link rel="stylesheet" href="./css/style.css">
+</head>
+
+ <body>
+	
+	
+	<div id = "wind">
+		<div id = "miniature"></div>
+		<div  id = "conteiner1">
+			<div id = "conteiner2">
+				<input type=button value='РЕГИСТРАЦИЯ ИГРОКА' onclick='registrate()'>
+				<input type=button value='НАЧАТЬ ИГРУ' onclick='switchToGamePage()'>
+				<input type=button value='РЕЙТИНГ' onclick='switchToResultPage()'>
+			</div>
+		</div>
+	</div>
+ 
+ 
+ 
+ 
+	<script>
+		var cancel = false;
+		var allLives = 0;
+		var start_Stop;
+		
+		function deleteMiniature() {
+			let div = document.getElementById("miniature");
+			div.remove();
+		};
+		
+		
+		setTimeout(deleteMiniature, 6000);
+		
+	
+		function registrate () {
+			var yourname = prompt("Введите Ваше имя или логин, используйте только буквы.", "Иван");
+			if ( /\d|^$|null/gi.test(yourname) ) {
+				do {
+				yourname = prompt("Пожалуйста введите корректные данные.");
+				} while ( /\d|^$|null/gi.test(yourname) );
+			};
+			if(yourname) {
+				let arr1 = yourname.toLowerCase().split('');
+		one:	for(var key in users) {
+					let arr2 = users[key].toLowerCase().split('');
+					let max = Math.max(arr1.length, arr2.length)
+			outer:	for(let i = 0; i < max; i++) {
+							if(arr2[i] === arr1[i]) {
+								if(i + 1 === arr1.length && arr2.length === i + 1) {
+									alert("Пожалуйста введите другое имя, это уже занято.");
+									registrate();
+								} 
+								continue;
+							} else {
+								break outer;
+								}
+						
+					}
+					
+					
+					
+				}
+				
+			}
+			sessionStorage.setItem("starbattle", yourname);
+			let num = Object.keys(users).length;
+			users[num + 1] = yourname;
+		};
+	
+	var users = {
+			1: "Иванов",
+			2: "Иван",
+			3: "Влад",
+			4: "Vlad",
+	
+	
+	};
+	
+	
+  window.onhashchange=switchToStateFromURLHash;
+
+  var SPAState={};
+
+  function switchToStateFromURLHash() {
+    var URLHash=window.location.hash;
+    var stateStr=URLHash.substr(1);
+
+    if ( stateStr!="" ) {
+		switch ( stateStr ) {
+			case 'Game':
+				buildGamePage();
+			break;
+			case 'Main':
+				buildMainPage();
+				break;
+			case 'Result':
+				buildResultPage();
+				break;
+		};
+    }
+
+
+    console.log('Новое состояние приложения:');
+    console.log(stateStr);
+  }
+  // устанавливает в закладке УРЛа новое состояние приложения
+  // и затем устанавливает+отображает это состояние
+  function switchToState(newState) {
+    var stateStr=newState.pagename;
+    location.hash=stateStr;
+  }
+
+  function switchToMainPage() {
+    switchToState( { pagename:'Main' } );
+  }
+
+  function switchToGamePage() {  
+	let key = sessionStorage.getItem("starbattle")
+	if(key){
+    switchToState( { pagename:'Game' } );
+	} else{
+	confirm("Ваше Имя не определено. Пожалуйста, зарегистрируйтесь перед началом игры.")
+	}
+  }
+
+  function switchToResultPage() {
+    switchToState( { pagename:'Result' } );
+  }
+
+  // переключаемся в состояние, которое сейчас прописано в закладке УРЛ
+  switchToStateFromURLHash();
+
+	function buildGamePage() {
+		let elem = document.getElementById("wind");
+		elem.remove();
+		let newCanvas = document.createElement("canvas");
+		document.body.appendChild(newCanvas);
+		newCanvas.setAttribute('id', 'myCanvas');
+		newCanvas.setAttribute('width', 600);
+		newCanvas.setAttribute('height', 320);
+		let button1 = document.createElement("button");
+		let button2 = document.createElement("button");
+		let div1 = document.createElement("div");
+		//let div2 = document.createElement("div");
+		document.body.appendChild(button1);
+		document.body.appendChild(button2);
+		document.body.appendChild(div1);
+		//document.body.appendChild(div2);
+		button1.textContent = "НА ГЛАВНУЮ";
+		button2.textContent = "ПАУЗА";
+		button1.setAttribute('id', "button1");
+		button1.setAttribute("onclick", "switchToMainPage()");
+		button2.setAttribute('id', "button2");
+		button2.setAttribute('onclick', "switchCancel()");
+		div1.setAttribute('id', "lives");
+		//div2.setAttribute('id', "time");
+		cancel = false;
+		playGame();
+	};
+	
+	function switchCancel() {
+		if(cancel) {
+			cancel = false;
+			start_Stop();
+			return;
+		}
+		cancel = true;
+	}
+	
+	function buildMainPage() {
+		cancel = true;
+		let elem1 = document.getElementById("myCanvas");
+		let elem2 = document.getElementById("button1");
+		let elem3 = document.getElementById("button2");
+		let elem4 = document.getElementById("lives");
+		elem1.remove();
+		elem2.remove();
+		elem3.remove();
+		elem4.remove();
+		let div1 = document.createElement("div");
+		let div2 = document.createElement("div");
+		let div3 = document.createElement("div");
+		document.body.appendChild(div1);
+		let ElemDiv1 = document.body.querySelectorAll("div")[0];
+		ElemDiv1.appendChild(div2);
+		let ElemDiv2 = document.body.querySelectorAll("div")[1];
+		ElemDiv2.appendChild(div3);
+		let ElemDiv3 = document.body.querySelectorAll("div")[2];
+		let input1 = document.createElement("input");
+		let input2 = document.createElement("input");
+		let input3 = document.createElement("input");
+		ElemDiv3.appendChild(input1);
+		ElemDiv3.appendChild(input2);
+		ElemDiv3.appendChild(input3);
+		ElemDiv1.setAttribute('id', 'wind');
+		ElemDiv2.setAttribute('id', 'conteiner1');
+		ElemDiv3.setAttribute('id', 'conteiner2');
+		input1.setAttribute("type", "button");
+		input2.setAttribute("type", "button");
+		input3.setAttribute("type", "button");
+		input1.setAttribute("value", "РЕГИСТРАЦИЯ ИГРОКА");
+		input2.setAttribute("value", "НАЧАТЬ ИГРУ");
+		input3.setAttribute("value", "РЕЙТИНГ");
+		input1.setAttribute("onclick", "registrate()");
+		input2.setAttribute("onclick", "switchToGamePage()");
+		input3.setAttribute("onclick", "switchToResultPage()");
+	}
+	
+	
+	
+	
+	</script>
+	
+</body>
+</html>
